@@ -8,4 +8,5 @@
 *.depend
 /bin/*
 /proj/*
+/tests/*
 
