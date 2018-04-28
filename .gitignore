@@ -1,0 +1,11 @@
+*.[oa]
+*.obj
+*.dll
+*.exe
+*.lib
+*~
+*.layout
+*.depend
+/bin/*
+/proj/*
+
