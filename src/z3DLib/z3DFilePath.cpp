@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <io.h>
 #include <iostream>
 #include <algorithm>
 #include "z3DLib/z3DFilePath.h"
@@ -104,6 +105,55 @@ FilePath::FilePath(const char* path) : path_(path) { Init(); }
 
 void FilePath::PrintPath(){
     std::cout << path_ << std::endl;
+}
+
+bool FilePath::FindPathEntity(long* size, long* attrib) const {
+    _finddata_t fd;
+    long fh = _findfirst( path_.c_str(), &fd );
+    long flags = 0;
+    long filesize = 0;
+    if ( fh != -1 ) {
+        if (fd.attrib & _A_RDONLY)
+            flags |= kReadOnly;
+
+        if (fd.attrib & _A_HIDDEN)
+            flags |= kHidden;
+
+        if (fd.attrib & _A_SUBDIR)
+            flags |= kDirectory;
+        else
+            filesize = fd.size;
+        _findclose( fh );
+
+        if (attrib) *attrib = flags;
+        if (size) *size = filesize;
+    }
+
+    return fh != -1;
+}
+
+bool FilePath::Exists() const {
+    return FindPathEntity();
+}
+
+bool FilePath::IsDirectory() const {
+    long attrib = 0;
+    if (!FindPathEntity(0, &attrib)) return false;
+    return attrib & kDirectory;
+}
+
+bool FilePath::IsFile() const {
+    long attrib = 0;
+    if (!FindPathEntity(0, &attrib)) return false;
+    return (attrib & kDirectory) == 0;
+}
+
+long FilePath::FileLength() const {
+    long attrib = 0;
+    long size = 0;
+    if (!FindPathEntity(&size, &attrib)) return -1;
+    if ((attrib & kDirectory)!= 0) return -1;
+    return size;
 }
 
 const char FilePath::kNameDelimChar = '\\';

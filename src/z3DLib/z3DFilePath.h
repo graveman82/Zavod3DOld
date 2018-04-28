@@ -10,6 +10,12 @@ class FilePath{
 private:
     typedef std::vector<std::string> StringVec;
     enum NameType{kDir, kFile, kRoot };
+    enum Attrib{
+        kNormal = (1 << 0),
+        kReadOnly = (1 << 1),
+        kHidden = (1 << 2),
+        kDirectory = (1 << 3),
+    };
 
 private:
     std::string path_;
@@ -40,6 +46,14 @@ private:
 
     void Init();
 
+    /* Поиск файла или директории, заданных путем, на диске.
+    Возвращает true, если файл или директория найдены, или false - в обратном случае.
+    Предусловия:
+    1) Валидный путь
+    */
+    bool FindPathEntity(long* size = 0,
+                        long* attrib = 0) const;
+
 public:
     FilePath();
 
@@ -65,6 +79,14 @@ public:
     // debug print
     void PrintPath();
     void DebugPrint_SplitTest();
+
+    bool Exists() const;
+
+    bool IsDirectory() const;
+
+    bool IsFile() const;
+
+    long FileLength() const;
 
 };
 
