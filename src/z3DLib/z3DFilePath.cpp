@@ -9,7 +9,7 @@ namespace z3D{
 bool FilePath::InvalidCharsInName(const std::string& name, NameType type) const {
     if (name.empty()) return false;
     if (type == kRoot) {
-        if (std::isalpha(name.at(0) == 0)) return true;
+        if (std::isalpha(name.at(0)) == 0) return true;
         if ((name.length() > 1) && (name.at(1) != ':')) return true;
         return false;
     }
