@@ -38,10 +38,26 @@ void FilePath::NormalizeNameDelimChar() {
 }
 
 void FilePath::RemoveNameDelimCharDups() {
+#ifdef Z3D_CPP11
     if (path_.empty())
         return;
     path_.erase(std::unique(path_.begin(), path_.end(), [](char l, char r){
         return l == kNameDelimChar && r == kNameDelimChar;}), path_.end());
+#else
+    std::string::size_type pos = path_.find_first_of(kDirSplitChar, 0);
+    while (pos != path_.npos) {
+        ++pos;
+        while (pos < path_.size()) {
+            if (path_.at(pos) == kDirSplitChar) {
+                path_.erase(pos, 1);
+            }
+            else {
+                pos = path_.find_first_of(kDirSplitChar, pos);
+                break;
+            }
+        }
+    }
+#endif
 }
 
 void FilePath::Split() {
